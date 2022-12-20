@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Вопросы</title>
+    {% include "site/components/connections.html" %}
+</head>
+<body>
+{% if user == None %}
+    {% include "site/components/header.html" %}
+{% else %}
+    {% include "site/components/auth_header.html" %}
+{% endif %}
+
+<div class="container">
+    <div class="fl">
+        {% include "site/components/sidebar.html" %}
+        <div class="main_place">
+            <div class="fl j-s-b" style="margin-bottom: 25px;">
+                <h1>Результаты поиска</h1>
+                <a class="add_question" href="/add_question">
+                    Задать вопрос
+                </a>
+            </div>
+            Результаты для: {{ name }}
+            {% if questions|length == 0 %}
+                <div class="mini_zag">Ничего не найдено</div>
+            {% else %}
+                <div class="question_place">
+                    {% for question in questions %}
+                        <div class="question_item">
+                            <div class="analytics_place">
+                                <div class="fl a-c">
+                                    <div class="fl f-d-c a-c j-c m-r-10">
+                                        <span class="fa fa-comments m-r-10"></span>
+                                        <span class="m-r-10">{{ question.comments|length }}</span>
+                                    </div>
+                                    <div class="fl f-d-c a-c j-c">
+                                        <span class="fa fa-comments m-r-10"></span>
+                                        <span class="m-r-10">{{ question.views }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="main_question_place">
+                                <a class="question_heading" href="/question/{{ question.id }}">
+                                    {{ question.title }}
+                                </a>
+                                {% for cat in question.cats %}
+                                    {% if cat != None %}
+                                        <a class="tags_item m-t-10"
+                                           href="/questions/{{ cat.category.id }}">{{ cat.category.title }}</a>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="author_question_place">
+                                <div class="fl a-c j-c f-d-c">
+                                    <div class="publish_date">Выложен {{ question.start_date }}</div>
+                                    <a href="user/{{ question.author.id }}">{{ question.author.login }}</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ user.login }}</title>
+    {% include "site/components/connections.html" %}
+</head>
+<body>
+{% if user == None %}
+    {% include "site/components/header.html" %}
+{% else %}
+    {% include "site/components/auth_header.html" %}
+{% endif %}
+
+
+<div class="container">
+    <div class="fl">
+        {% include "site/components/sidebar.html" %}
+        <div class="main_categories_place">
+            <div class="f-w-b m-b-10">{{ user.login }}</div>
+            <span class="fa fa-clock"></span> На сайте с: {{ user.registration_date }}
+            <div class="fl">
+                <div>
+                    <div class="mini_zag">Статистика</div>
+                    <div class="statistics_user">
+                        <div>
+                            <div class="mini_zag">
+                                Вопросов задано:
+                            </div>
+                            <span class="fas fa-pencil-alt"></span> {{ user.statistics.question_count }}
+                            <div class="mini_zag">
+                                Вопросов прокомментировано:
+                            </div>
+                            <span class="fas fa-comment"></span> {{ user.statistics.comment_count }}
+                        </div>
+                        <div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="mini_zag">О себе</div>
+                    <div class="about_user">
+                        {% if user.description == '' %}
+                            Пользователь пока не заполнил данные о себе
+                        {% else %}
+                            {{ user.description }}
+                        {% endif %}
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

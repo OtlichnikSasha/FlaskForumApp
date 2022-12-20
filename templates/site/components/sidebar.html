@@ -1,0 +1,21 @@
+<div class="sidebar">
+    <ul>
+        <a class="sidebar_link" href="/"><li>Главная</li></a>
+        <a class="sidebar_link" href="/categories"><li>Метки</li></a>
+        <a class="sidebar_link" href="/users"><li>Участники</li></a>
+    </ul>
+</div>
+
+
+<script>
+    activeAnchor();
+
+    function activeAnchor() {
+        let hrefs = document.getElementsByClassName('sidebar_link');
+        for (let i = 0; i < hrefs.length; i++) {
+            if (hrefs[i].href === location.href) {
+                return hrefs[i].classList.add('_active');
+            }
+        }
+    }
+</script>

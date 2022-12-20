@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Метки</title>
+    {% include "site/components/connections.html" %}
+</head>
+<body>
+{% if user == None %}
+    {% include "site/components/header.html" %}
+{% else %}
+    {% include "site/components/auth_header.html" %}
+{% endif %}
+
+<div class="container">
+    <div class="fl">
+        {% include "site/components/sidebar.html" %}
+        <div class="main_categories_place">
+            <h1>Метки</h1>
+            Метка — это ключевое слово, позволяющее отнести ваш вопрос в одну категорию с другими похожими вопросами.
+            Благодаря подбору правильных меток другие участники смогут проще найти ваш вопрос и быстрее дать на него
+            ответ.
+            <div class="categories_place">
+                {% for cat in categories %}
+                    <div class="category_item">
+                        <a class="tags_item" href="/questions/{{ cat.id }}">{{ cat.title }}</a>
+                        <div class="category_description">
+                            {{ cat.description }}
+                        </div>
+                        Вопросов задано: {{ cat.question_count }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="pagination_place">
+        {% for i in range(1, page_count + 1, 1) %}
+            {% if i == page %}
+                <div class="pagination_item _active">
+                    <a class="pagination_num" href="/{{ i }}">{{ i }}</a>
+                </div>
+            {% else %}
+                <div class="pagination_item">
+                    <a class="pagination_num" href="/{{ i }}">{{ i }}</a>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+</body>
+</html>

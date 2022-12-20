@@ -1,0 +1,29 @@
+<!-- Уведомление об ошибке или успешном действии -->
+<div class="notification" id="notification_popup">
+    <div class="notification_zag" id="notification_zag">
+
+    </div>
+    <div class="notification_message" id="notification_message">
+
+    </div>
+</div>
+
+<script>
+    // Кастомный блок для ошибок и успешных действий
+    function notification(message, status) {
+        // 1 - ошибка, 2 - правильное
+        notification_popup.classList.add('_active');
+        setTimeout(function () {
+            notification_popup.classList.remove('_active');
+        }, 2500)
+        if (status === 1) {
+            notification_popup.style.background = '#F54343';
+            notification_zag.innerText = 'Ошибка!';
+            notification_message.innerText = message;
+        } else {
+            notification_popup.style.background = '#71cbb0';
+            notification_zag.innerText = 'Успешно!';
+            notification_message.innerText = message;
+        }
+    }
+</script>

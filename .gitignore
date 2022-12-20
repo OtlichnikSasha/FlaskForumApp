@@ -1,0 +1,12 @@
+.idea
+/.idea
+
+/.venv
+/.venvus
+.venv
+.venvus
+/.pycache
+.pycache
+
+.env
+.env.development

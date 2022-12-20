@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+    {% include "site/components/connections.html" %}
+</head>
+<body>
+{% include "site/components/header.html" %}
+
+<div class="container">
+    <div class="registr_popup_place">
+        <div>
+            <div class="heading">
+                Присоединяйтесь к сообществу «Shabanov Overflow на русском».
+                <br> Это бесплатно и займёт не больше минуты.
+            </div>
+            <div class="registr_popup">
+                <div class="mini_zag">
+                    Придумайте логин
+                </div>
+                <input class="auth_input"/>
+                <div class="mini_zag">
+                    Пароль
+                </div>
+                <input class="auth_input" type="password"/>
+                <div class="mini_zag">
+                    Повторите пароль
+                </div>
+                <input class="auth_input"  type="password"/>
+                <div class="registr_btn reg" id="registration">
+                    Регистрация
+                </div>
+            </div>
+            <div class="reg_sub">Уже есть учётная запись? <a href="/login/authorization">Войдите</a></div>
+        </div>
+    </div>
+</div>
+{% include 'site/components/notification.html' %}
+<script>
+    registration.onclick = function () {
+        registrationUser();
+    }
+    let inp = document.getElementsByClassName('auth_input')
+
+    for (let i = 0; i < inp.length; i++) {
+        inp[i].onfocus = function () {
+            inp[i].classList.remove('error');
+        }
+    }
+
+    function registrationUser() {
+        for (let i = 0; i < inp.length; i++) {
+            if (inp[i].value === '') {
+                inp[i].classList.add('error');
+            }
+        }
+        if (document.getElementsByClassName('error').length) return;
+        if (inp[1].value !== inp[2].value) {
+            inp[1].classList.add('error');
+            return inp[2].classList.add('error');
+        }
+        let data = {
+            'login': inp[0].value,
+            'password': inp[1].value
+        }
+        $.ajax({
+            url: '/api/user/registration',
+            type: 'POST',
+            dataType: "json",
+            contentType: "application/json; charset=UTF-8",
+            data: JSON.stringify(data),
+            success: function (msg) {
+                console.log(msg);
+                if(msg.status === 'ok') return notification('Вы успешно зарегистрировались', 2)
+                return notification(msg.message, 1)
+            }
+        })
+    }
+</script>
+</body>
+</html>

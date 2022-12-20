@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Личный кабинет {{ user.login }}</title>
+    {% include "site/components/connections.html" %}
+</head>
+<body>
+{% include "site/components/auth_header.html" %}
+<div class="container">
+    <div class="fl">
+        {% include "site/components/sidebar.html" %}
+        <div class="main_categories_place">
+            <div class="f-w-b m-b-10">{{ user.login }}</div>
+            <span class="fa fa-clock"></span> На сайте с: {{ user.registration_date }}
+            <div class="fl">
+                <div>
+                    <div class="mini_zag">Статистика</div>
+                    <div class="statistics_user">
+                        <div>
+                            <div class="mini_zag">
+                                Вопросов задано:
+                            </div>
+                            <span class="fas fa-pencil-alt"></span> {{ user.statistics.question_count }}
+                            <div class="mini_zag">
+                                Вопросов прокомментировано:
+                            </div>
+                            <span class="fas fa-comment"></span> {{ user.statistics.comment_count }}
+                        </div>
+                        <div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="mini_zag">О себе</div>
+                    <div class="about_user">
+                        <textarea id="description_textarea"
+                                  placeholder="Заполните описание">{{ user.description }}</textarea>
+                    </div>
+                    <div class="registr_btn reg" id="save_btn" style="margin: 20px 0; cursor:pointer">
+                        Сохранить
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'site/components/notification.html' %}
+<script>
+    save_btn.onclick = function () {
+        editUser()
+    }
+
+    function editUser() {
+        let data = {
+            'description': description_textarea.value
+        }
+        console.log(data)
+        $.ajax({
+            url: '/api/user/edit',
+            type: "GET",
+            data: data,
+            success: function (msg) {
+                if (msg.status === 'ok') return notification('Описание успешно изменено',2)
+                return notification(msg.message, 1);
+            }
+        })
+
+    }
+</script>
+</body>
+</html>

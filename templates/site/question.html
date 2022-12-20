@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ question.title }}</title>
+    {% include "site/components/connections.html" %}
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+</head>
+<body>
+{% if user == None %}
+    {% include "site/components/header.html" %}
+{% else %}
+    {% include "site/components/auth_header.html" %}
+{% endif %}
+
+<div class="container">
+    <div class="fl">
+        {% include "site/components/sidebar.html" %}
+        <div class="main_place">
+            <div class="question_statistics">
+                <div>Вопрос задан: {{ question.start_date }}</div>
+                <div>Просмотров: {{ question.views }}</div>
+            </div>
+            <div class="fl j-s-b" style="margin-bottom: 25px;">
+                <h1>{{ question.title }}</h1>
+                <a class="add_question" href="/add_question">
+                    Задать вопрос
+                </a>
+            </div>
+            {% for tag in tags %}
+                <a class="tags_item" href="/questions/{{ tag.id }}">{{ tag.title }}</a>
+            {% endfor %}
+            <div class="m-t-10">
+                {{ question.text|safe }}
+            </div>
+            <div class="mini_zag">Ответы</div>
+            <div class="comments_place" id="comments_place">
+                {% if comments|length == 0 %}
+                    Ответов пока нет. Будь первым!
+                {% else %}
+                    {% for comment in comments %}
+                        <div class="f-w-b">{{ comment.author.login }}</div>
+                        <div class="comment_place">
+                            {{ comment.text|safe }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            {% if user != None %}
+                <div class="mini_zag">Ваш ответ</div>
+                <textarea id="summernote"></textarea>
+                <div class="registr_btn reg comment_add" id="save_btn">Опубликовать</div>
+            {% else %}
+                <div class="mini_zag">Чтобы оставить ответ, <a href="/login/authorization" style="color:#1b9dfc">авторизуйтесь</a>
+                </div>
+            {% endif %}
+        </div>
+        <div class="right_sidebar">
+            <h3>Похожие</h3>
+            {% for sq in similar_questions %}
+                <div class="similar_question f-w-b">
+                    <a href="/question/{{ sq.id }}">{{ sq.title }}</a>
+                    <div class="similar_views">
+                        <span class="fa fa-eye"></span>
+                        <span class="tags_views">{{ sq.views }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+{% include 'site/components/notification.html' %}
+<script>
+    {% if user != None %}
+        var markupStr = $('#summernote').summernote('code');
+        save_btn.onclick = function () {
+            addComment()
+        }
+    {% endif %}
+
+    function addComment() {
+        var markupStr = $('#summernote').summernote('code');
+        let data = {
+            'question_id': {{ question.id }},
+            'text': markupStr
+        }
+        $.ajax({
+            url: '/api/comment/add',
+            type: 'POST',
+            dataType: "json",
+            contentType: "application/json; charset=UTF-8",
+            data: JSON.stringify(data),
+            success: function (msg) {
+                console.log(msg)
+                if (msg.status === 'ok') return location.reload()
+                return notification(msg.message, 1)
+            }
+        })
+    }
+
+
+</script>
+</body>
+</html>

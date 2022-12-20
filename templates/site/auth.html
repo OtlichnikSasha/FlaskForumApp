@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Авторизация</title>
+    {% include "site/components/connections.html" %}
+</head>
+<body>
+{% include "site/components/header.html" %}
+
+<div class="container">
+    <div class="registr_popup_place">
+        <div>
+            <div class="registr_popup">
+                <div class="mini_zag">
+                    Логин
+                </div>
+                <input class="auth_input"/>
+                <div class="mini_zag">
+                    Пароль
+                </div>
+                <input class="auth_input" type="password"/>
+
+                <div class="registr_btn reg" id="auth">
+                    Авторизация
+                </div>
+            </div>
+            <div class="reg_sub">Ещё нет учётной записи? <a href="/login/signup">Зарегистрируйтесь</a></div>
+        </div>
+    </div>
+</div>
+{% include 'site/components/notification.html' %}
+<script>
+    auth.onclick = function () {
+        authUser();
+    }
+    let inp = document.getElementsByClassName('auth_input')
+
+    for (let i = 0; i < inp.length; i++) {
+        inp[i].onfocus = function () {
+            inp[i].classList.remove('error');
+        }
+    }
+
+    function authUser() {
+        for (let i = 0; i < inp.length; i++) {
+            if (inp[i].value === '') {
+                inp[i].classList.add('error');
+            }
+        }
+        if (document.getElementsByClassName('error').length) return;
+        let data = {
+            'login': inp[0].value,
+            'password': inp[1].value
+        }
+        $.ajax({
+            url: '/api/user/authorization',
+            type: 'POST',
+            dataType: "json",
+            contentType: "application/json; charset=UTF-8",
+            data: JSON.stringify(data),
+            success: function (msg) {
+                console.log(msg);
+                if(msg.status === 'ok') return location.href = `/cabinet`
+                return notification(msg.message, 1)
+            }
+        })
+    }
+</script>
+</body>
+</html>

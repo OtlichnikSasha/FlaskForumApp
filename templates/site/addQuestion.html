@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Задать вопрос</title>
+    {% include "site/components/connections.html" %}
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+</head>
+<body>
+{% if user == None %}
+    {% include "site/components/header.html" %}
+{% else %}
+    {% include "site/components/auth_header.html" %}
+{% endif %}
+
+<div class="container">
+    <h1>Задать публичный вопрос</h1>
+    <div class="add_question_place">
+        <a class="mini_zag" href="" id="question_href" style="display: none"></a>
+        <div class="mini_zag">Напишите тему вопроса</div>
+        <input class="auth_input" placeholder="Тема вопроса" id="title"/>
+        <div class="mini_zag">Опишите свою проблему</div>
+        <div><textarea id="summernote"></textarea></div>
+
+
+        <div class="mini_zag">Выберите подходящие метки</div>
+        <div class="m-t-10 m-b-10">
+            <input class="search_inp" placeholder="Поиск по меткам" id="search_tags_inp">
+        </div>
+
+        <div id="tags_place" class="tags_place">
+
+        </div>
+        {% if user == None %}
+            <div class="m-t-10 t-c">
+                <a href="/login/authorization">Авторизуйтесь</a> для публикации вопроса
+            </div>
+        {% else %}
+            <div class="registr_btn reg" id="save_btn">Опубликовать</div>
+        {% endif %}
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+{% include 'site/components/notification.html' %}
+<script>
+    var markupStr = $('#summernote').summernote('code');
+    let tags = []
+
+    let tags_for_question = []
+    {% if user != None %}
+        save_btn.onclick = function () {
+            addQuestion();
+        }
+    {% endif %}
+
+    search_tags_inp.onchange = function () {
+        searchTags()
+    }
+
+    function addQuestion() {
+        markupStr = $('#summernote').summernote('code');
+        let data = {
+            'title': title.value,
+            'question': markupStr,
+            'tags': tags_for_question
+        }
+        console.log(data)
+        $.ajax({
+            url: '/api/question/create',
+            type: 'POST',
+            dataType: "json",
+            contentType: "application/json; charset=UTF-8",
+            data: JSON.stringify(data),
+            success: function (msg) {
+                if(msg.status === 'ok') {
+                    question_href.innerText = ''
+                    question_href.style.display = 'block';
+                    question_href.href = `http://127.0.0.1:5000/question/${msg.message.question}`
+                    question_href.innerText = 'Просмотреть вопрос на сайте'
+                    return notification("Вопрос успешно создан!", 2);
+                }
+                return notification(msg.message, 1);
+            }
+        })
+    }
+
+    function searchTags() {
+        let data = {
+            'name': search_tags_inp.value,
+            'tags': tags
+        }
+        $.ajax({
+            url: '/api/tags/search',
+            type: 'POST',
+            dataType: "json",
+            contentType: "application/json; charset=UTF-8",
+            data: JSON.stringify(data),
+            success: function (msg) {
+                console.log(msg)
+                if (msg.status === 'ok') return drawTags(msg.message.tags)
+                return notification(msg.message, 1);
+            }
+        })
+    }
+
+    function drawTags(tages) {
+        tags_place.style.display = 'block';
+        if(!tages.length) return notification("Ничего не найдено!", 1);
+        for (let i = 0; i < tages.length; i++) {
+            let t = tages[i];
+            tags.push(t.id);
+            tages.map((ta) => {
+                tags_place.innerHTML +=
+                    `
+                    <div class="fl a-c">
+                    <div class="tag_name_place">
+                        <div class="tag_name">
+                            ${ta.title}
+                        </div>
+                    </div>
+                    <div class="tag_inp_place">
+                        <input type="checkbox" value='${ta.id}' onchange="addTag(this)" />
+                    </div>
+                </div>
+               `
+            })
+        }
+    }
+
+
+    function addTag(e){
+        if(e.checked){
+            return tags_for_question.push(Number(e.value))
+        }
+        return removeItemAll(tags_for_question, Number(e.value))
+    }
+
+
+    function removeItemAll(arr, value) {
+        var i = 0;
+        while (i < arr.length) {
+            if (arr[i] === value) {
+                arr.splice(i, 1);
+            } else {
+                ++i;
+            }
+        }
+        return arr;
+    }
+</script>
+</body>
+</html>

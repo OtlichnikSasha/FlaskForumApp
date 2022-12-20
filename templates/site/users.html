@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Участники</title>
+    {% include "site/components/connections.html" %}
+</head>
+<body>
+{% if user == None %}
+    {% include "site/components/header.html" %}
+{% else %}
+    {% include "site/components/auth_header.html" %}
+{% endif %}
+<div class="container">
+    <div class="fl">
+        {% include "site/components/sidebar.html" %}
+        <div class="main_categories_place">
+            <h1>Участники</h1>
+            <div class="categories_place">
+                {% for user in users %}
+                    <div class="user_item">
+                        <div class="fl f-d-c j-c">
+                            <a href="/user/{{ user.id }}">{{ user.login }}</a>
+                            <div>Ответов дано: {{ user.comment_count }}</div>
+                            <div>Вопросов задано: {{ user.question_count }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="pagination_place">
+        {% for i in range(1, page_count + 1, 1) %}
+            {% if i == page %}
+                <div class="pagination_item _active">
+                    <a class="pagination_num" href="/{{ i }}">{{ i }}</a>
+                </div>
+            {% else %}
+                <div class="pagination_item">
+                    <a class="pagination_num" href="/{{ i }}">{{ i }}</a>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+</body>
+</html>
